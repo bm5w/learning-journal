@@ -35,7 +35,7 @@ header {
 }
 
 h1 {
-    font-family: 'Changa One', sans-serif;
+    font-family: 'Molengo', sans-serif;
     margin: 15px 0;
     font-size: 1.75em;
     font-weight: normal;
@@ -43,7 +43,8 @@ h1 {
 }
 
 h2 {
-  font-size: 0.75em;
+  font-family: 'Molengo', sans-serif;
+  font-size: 1.25em;
   margin -5px 0 0;
   font-weight: normal;
 }
@@ -113,6 +114,7 @@ Page: new and edit
   float: right;
 }
 
+
 /*******************************
 Footer
 *******************************/
@@ -164,11 +166,11 @@ Colors
 /* site body */
 body {
   background-color: #fff;
-  color: #999;
+  color: #666;
 }
 
-/* green header */
-header{
+/* Blue header */
+header {
     background: #336699;
     border-color: #666666;
 }
@@ -196,8 +198,22 @@ nav a, nav a:visited{
 /*selected nav link*/
 nav a.selected, nav a:hover{
   color: #999999
-
 }
+
+/*Detail page title and date*/
+#wrapper h2{
+  font-family: 'Open Sans', sans-serif;
+  color: #666;
+  font-weight: bold;
+}
+
+/*Detail page content*/
+#wrapper p {
+  font-family: 'Open Sans', sans-serif;
+  color: #666
+  font-weight: 300;
+}
+
 
 /*******************************
 Responsive
@@ -257,18 +273,6 @@ Header
     border-bottom: 5px solid #114466;
     margin-bottom: 60px;
   }
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
 
