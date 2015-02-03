@@ -8,6 +8,18 @@ from waitress import serve
 import psycopg2
 from contextlib import closing
 
+DB_SCHEMA = """
+CREATE TABLE IF NOT EXISTS entries (
+    id serial PRIMARY KEY,
+    title VARCHAR (127) NOT NULL,
+    text TEXT NOT NULL,
+    created TIMESTAMP NOT NULL
+)
+"""
+
+# add this just below the SQL table definition we just created
+logging.basicConfig()
+log = logging.getLogger(__file__)
 
 
 @view_config(route_name='home', renderer='string')
@@ -62,16 +74,3 @@ if __name__ == '__main__':
     app = main()
     port = os.environ.get('PORT', 5000)
     serve(app, host='0.0.0.0', port=port)
-
-DB_SCHEMA = """
-CREATE TABLE IF NOT EXISTS entries (
-    id serial PRIMARY KEY,
-    title VARCHAR (127) NOT NULL,
-    text TEXT NOT NULL,
-    created TIMESTAMP NOT NULL
-)
-"""
-
-# add this just below the SQL table definition we just created
-logging.basicConfig()
-log = logging.getLogger(__file__)
