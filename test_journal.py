@@ -2,7 +2,7 @@
 from contextlib import closing
 from pyramid import testing
 import pytest
-from psycopg2 import DataError
+from psycopg2 import DataError, IntegrityError
 
 from journal import connect_db
 from journal import DB_SCHEMA
@@ -60,11 +60,25 @@ def test_write_entry(req_context):
         assert val == actual[idx]
 
     # Test when title is greater than 127 bytes (126 characters)
-    req_context.params['title'] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
+    req_context.params['title'] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
-    aaaa"
+    aaaaaaaaaaa"
     with pytest.raises(DataError):
-        result2 = write_entry(req_context)
+        write_entry(req_context)
+    # rollback cursor after above expected error
+    req_context.db.rollback()
+    # Test when no title is given
+    del req_context.params['title']
+    with pytest.raises(IntegrityError):
+        write_entry(req_context)
+    # rollback cursor after above expected error
+    req_context.db.rollback()
+    # Test when no text is given
+    del req_context.params['text']
+    req_context.params['title'] = "test"
+    print req_context.params
+    with pytest.raises(IntegrityError):
+        write_entry(req_context)
 
 
 @pytest.fixture(scope='session')
