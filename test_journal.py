@@ -9,6 +9,7 @@ import datetime
 from journal import INSERT_ENTRY
 from journal import connect_db
 from journal import DB_SCHEMA
+import os
 
 
 TEST_DSN = 'dbname=test_learning_journal user=mark'
@@ -143,6 +144,54 @@ def test_read_entries_multiple(req_context):
         assert expected[index][1] == entry['text']
         for key in 'id', 'created':
             assert key in entry
+
+
+def test_empty_listing(app):
+    """Using webtest to test body of HTML and empty db."""
+    response = app.get('/')
+    assert response.status_code == 200
+    actual = response.body
+    expected = 'No entries here so far'
+    assert expected in actual
+
+
+def test_listing(app, entry):
+    """Using webtest to test body of HTML with entry."""
+    response = app.get('/')
+    assert response.status_code == 200
+    actual = response.body
+    for expected in entry[:2]:
+        assert expected in actual
+
+
+# Fixture for webtest
+@pytest.fixture(scope='function')
+def app(db):
+    from journal import main
+    from webtest import TestApp
+    os.environ['DATABASE_URL'] = TEST_DSN
+    app = main()
+    return TestApp(app)
+
+
+# Fixture for functional test of HTML with populated db."""
+@pytest.fixture(scope='function')
+def entry(db, request):
+    """provide a single entry in the database"""
+    settings = db
+    now = datetime.datetime.utcnow()
+    expected = ('Test Title', 'Test Text', now)
+    with closing(connect_db(settings)) as db:
+        run_query(db, INSERT_ENTRY, expected, False)
+        db.commit
+
+    def cleanup():
+        clear_entries(settings)
+
+    request.addfinalizer(cleanup)
+
+    return expected
+
 
 
 @pytest.fixture(scope='session')
