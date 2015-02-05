@@ -2,6 +2,7 @@
 from contextlib import closing
 from pyramid import testing
 import pytest
+from psycopg2 import DataError
 
 from journal import connect_db
 from journal import DB_SCHEMA
@@ -57,6 +58,13 @@ def test_write_entry(req_context):
     actual = rows[0]
     for idx, val in enumerate(expected):
         assert val == actual[idx]
+
+    # Test when title is greater than 127 bytes (126 characters)
+    req_context.params['title'] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
+    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
+    aaaa"
+    with pytest.raises(DataError):
+        result2 = write_entry(req_context)
 
 
 @pytest.fixture(scope='session')
