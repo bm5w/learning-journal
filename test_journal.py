@@ -5,11 +5,13 @@ import pytest
 from psycopg2 import DataError
 from psycopg2 import IntegrityError
 import datetime
+import os
+from webtest import AppError
+from pyramid.httpexceptions import HTTPInternalServerError
 
 from journal import INSERT_ENTRY
 from journal import connect_db
 from journal import DB_SCHEMA
-import os
 
 
 TEST_DSN = 'dbname=test_learning_journal user=mark'
@@ -120,14 +122,8 @@ def test_read_entries_multiple(req_context):
     """
     # prepare data for testing
     now3 = datetime.datetime.utcnow()
-    # expected = ('Test Title', 'Test Text', now)
-    # run_query(req_context.db, INSERT_ENTRY, expected, False)
     now2 = datetime.datetime.utcnow()
-    # expected = ('Test Title2', 'Test Text2', now)
-    # run_query(req_context.db, INSERT_ENTRY, expected, False)
     now = datetime.datetime.utcnow()
-    # expected = ('Test Title3', 'Test Text3', now)
-    # run_query(req_context.db, INSERT_ENTRY, expected, False)
     expected = (('Test Title', 'Test Text', now),
                 ('Test Title2', 'Test Text2', now2),
                 ('Test Title3', 'Test Text3', now3))
@@ -164,6 +160,29 @@ def test_listing(app, entry):
         assert expected in actual
 
 
+def test_post_to_add_view(app):
+    entry_data = {
+        'title': 'Hello there',
+        'text': 'This is a post',
+    }
+    response = app.post('/add', params=entry_data, status='3*')
+    redirected = response.follow()
+
+    actual = redirected.body
+    for expected in entry_data.values():
+        assert expected in actual
+
+
+def test_post_to_add_view_2(app):
+    """Test if app.get('/add') is called returns error."""
+    entry_data = {
+        'title': 'Hello there',
+        'text': 'This is a post',
+    }
+    with pytest.raises(AppError):
+        response = app.get('/add', params=entry_data, status='3*')
+
+
 # Fixture for webtest
 @pytest.fixture(scope='function')
 def app(db):
@@ -191,7 +210,6 @@ def entry(db, request):
     request.addfinalizer(cleanup)
 
     return expected
-
 
 
 @pytest.fixture(scope='session')
