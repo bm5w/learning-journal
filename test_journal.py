@@ -112,7 +112,11 @@ def test_read_entries(req_context):
 
 
 def test_read_entries_multiple(req_context):
-    """Test that read_entries method will return multiple db entries."""
+    """Test that read_entries method will return multiple db entries.
+
+    Also verifies that entries are returned by creation date.
+    (Most recently created returned first)
+    """
     # prepare data for testing
     now3 = datetime.datetime.utcnow()
     # expected = ('Test Title', 'Test Text', now)
