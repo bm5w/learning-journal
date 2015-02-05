@@ -94,6 +94,9 @@ def write_entry(request):
 
 @view_config(route_name='add', request_method='POST')
 def add_entry(request):
+    """View function for adding entry, passes request to write_entry.
+    If error, return HTTPInternalServerError. If not, send back to home page.
+    """
     try:
         write_entry(request)
     except psycopg2.Error:
@@ -105,7 +108,6 @@ def add_entry(request):
 @view_config(route_name='home', renderer='templates/list.jinja2')
 def read_entries(request):
     """Return a dictionary with entries and their data.
-
     Returns by creation date, most recent first.
     """
     cursor = request.db.cursor()
@@ -116,7 +118,7 @@ def read_entries(request):
 
 
 def main():
-    """Create a configured wsgi app"""
+    """Create a configured wsgi app."""
     settings = {}
     settings['reload_all'] = os.environ.get('DEBUG', True)
     settings['debug_all'] = os.environ.get('DEBUG', True)
