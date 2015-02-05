@@ -8,6 +8,7 @@ from waitress import serve
 import psycopg2
 from contextlib import closing
 from pyramid.events import NewRequest, subscriber
+import datetime
 
 
 DB_SCHEMA = """
@@ -17,6 +18,9 @@ CREATE TABLE IF NOT EXISTS entries (
     text TEXT NOT NULL,
     created TIMESTAMP NOT NULL
 )
+"""
+INSERT_ENTRY = """
+INSERT INTO entries(title, text, created) VALUES (%s, %s, %s)
 """
 
 # add this just below the SQL table definition we just created
@@ -71,6 +75,14 @@ def close_connection(request):
         else:
             db.commit()
         request.db.close()
+
+
+def write_entry(request):
+    """Create an entry in the db."""
+    title = request.params.get('title', None)
+    text = request.params.get('text', None)
+    created = datetime.datetime.utcnow()
+    request.db.cursor().execute(INSERT_ENTRY, (title, text, created))
 
 
 def main():
