@@ -2,8 +2,11 @@
 from contextlib import closing
 from pyramid import testing
 import pytest
-from psycopg2 import DataError, IntegrityError
+from psycopg2 import DataError
+from psycopg2 import IntegrityError
+import datetime
 
+from journal import INSERT_ENTRY
 from journal import connect_db
 from journal import DB_SCHEMA
 
@@ -79,6 +82,63 @@ def test_write_entry(req_context):
     print req_context.params
     with pytest.raises(IntegrityError):
         write_entry(req_context)
+
+
+def test_read_entries_empty(req_context):
+    # call the function under test
+    from journal import read_entries
+    result = read_entries(req_context)
+    # make assertions about the result
+    assert 'entries' in result
+    assert len(result['entries']) == 0
+
+
+def test_read_entries(req_context):
+    # prepare data for testing
+    now = datetime.datetime.utcnow()
+    expected = ('Test Title', 'Test Text', now)
+    run_query(req_context.db, INSERT_ENTRY, expected, False)
+    # call the function under test
+    from journal import read_entries
+    result = read_entries(req_context)
+    # make assertions about the result
+    assert 'entries' in result
+    assert len(result['entries']) == 1
+    for entry in result['entries']:
+        assert expected[0] == entry['title']
+        assert expected[1] == entry['text']
+        for key in 'id', 'created':
+            assert key in entry
+
+
+def test_read_entries_multiple(req_context):
+    """Test that read_entries method will return multiple db entries."""
+    # prepare data for testing
+    now3 = datetime.datetime.utcnow()
+    # expected = ('Test Title', 'Test Text', now)
+    # run_query(req_context.db, INSERT_ENTRY, expected, False)
+    now2 = datetime.datetime.utcnow()
+    # expected = ('Test Title2', 'Test Text2', now)
+    # run_query(req_context.db, INSERT_ENTRY, expected, False)
+    now = datetime.datetime.utcnow()
+    # expected = ('Test Title3', 'Test Text3', now)
+    # run_query(req_context.db, INSERT_ENTRY, expected, False)
+    expected = (('Test Title', 'Test Text', now),
+                ('Test Title2', 'Test Text2', now2),
+                ('Test Title3', 'Test Text3', now3))
+    for item in expected:
+        run_query(req_context.db, INSERT_ENTRY, item, False)
+    # call the function under test
+    from journal import read_entries
+    result = read_entries(req_context)
+    # make assertions about the result
+    assert 'entries' in result
+    assert len(result['entries']) == 3
+    for index, entry in zip(range(len(expected)), result['entries']):
+        assert expected[index][0] == entry['title']
+        assert expected[index][1] == entry['text']
+        for key in 'id', 'created':
+            assert key in entry
 
 
 @pytest.fixture(scope='session')
