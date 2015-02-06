@@ -17,7 +17,6 @@ from pyramid.security import remember, forget
 here = os.path.dirname(os.path.abspath(__file__))
 
 
-
 DB_SCHEMA = """
 CREATE TABLE IF NOT EXISTS entries (
     id serial PRIMARY KEY,

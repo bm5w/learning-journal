@@ -91,7 +91,7 @@ def test_write_entry(req_context):
     rows = run_query(req_context.db, "SELECT * FROM entries")
     assert len(rows) == 0
 
-    result = write_entry(req_context)
+    write_entry(req_context)
     # manually commit so we can see the entry on query
     req_context.db.commit()
 
