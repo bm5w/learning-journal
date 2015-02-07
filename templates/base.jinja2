@@ -7,32 +7,29 @@
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     <link href="/static/style.css" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="static/normalize.css">
     <link href='http://fonts.googleapis.com/css?family=Lato:400,700,900|Open+Sans:400,600,700,800' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="static/main.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   </head>
   <body>
     <header>
-      <a href="index.html" id="logo">
+      <a href="/" id="logo">
         <h1>Mark Saiget</h1>
         <h2>Learning Journal</h2>
       </a>
-      <aside id="user-controls">
-        <ul>
-        {% if not request.authenticated_userid %}
-          <li><a href="{{ request.route_url('login') }}">log in</a></li>
-        {% else %}
-          <li><a href="{{ request.route_url('logout') }}">log out</a></li>
-        {% endif %}
-        </ul>
-      </aside>
       <nav>
         <ul>
           <li><a href="/" class="selected">Portfolio</a></li>
-          <li><a href="new.html">New</a></li>
+          <aside id="user-controls">
+          {% if not request.authenticated_userid %}
+            <li><a href="{{ request.route_url('login') }}">Login</a></li>
+          {% else %}
+            <li><a href="{{ request.route_url('logout') }}">Logout</a></li>
+          {% endif %}
         </ul>
+      </aside>
       </nav>
     </header>
     <main>
