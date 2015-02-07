@@ -2,14 +2,23 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Python Learning Journal</title>
+    <title>Mark Saiget | Learning Journal</title>
     <!--[if lt IE 9]>
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     <link href="/static/style.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="css/normalize.css">
+    <link href='http://fonts.googleapis.com/css?family=Lato:400,700,900|Open+Sans:400,600,700,800' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="css/main.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   </head>
   <body>
     <header>
+      <a href="index.html" id="logo">
+        <h1>Mark Saiget</h1>
+        <h2>Learning Journal</h2>
+      </a>
       <aside id="user-controls">
         <ul>
         {% if not request.authenticated_userid %}
@@ -21,7 +30,8 @@
       </aside>
       <nav>
         <ul>
-          <li><a href="/">Home</a></li>
+          <li><a href="/" class="selected">Portfolio</a></li>
+          <li><a href="new.html">New</a></li>
         </ul>
       </nav>
     </header>
@@ -32,7 +42,12 @@
       </section>
     </main>
     <footer>
-      <p>Created in the Code Fellows Python Dev Accelerator</p>
+      <ul>
+        <li class="github"><a href="https://github.com/bm5w">Github</a></li>
+        <li class="mail"><a href="mailto:saiget@gmail.com">Email</a></li>
+        <li class="phone"><a href="tel:360-903-5027">(360) 903-5027</a></li>
+        <li><p>&copy; 2015 Mark Saiget.</p></li>
+      </ul>
     </footer>
   </body>
 </html>
