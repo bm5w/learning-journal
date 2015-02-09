@@ -8,6 +8,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
+learning-journal-a/
 build/
 develop-eggs/
 dist/
