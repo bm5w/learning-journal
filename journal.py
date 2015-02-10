@@ -163,6 +163,18 @@ def logout(request):
     return HTTPFound(request.route_url('home'), headers=headers)
 
 
+SELECT_SINGLE_ENTRY = """
+SELECT title, text FROM entries WHERE created=%s::timestamp
+"""
+
+@view_config(route_name='detail')
+def entry_details(created_time):
+    # call read entries
+    # select out specific entry based on created time
+    pass
+
+
+
 def main():
     """Create a configured wsgi app."""
     settings = {}
@@ -198,6 +210,7 @@ def main():
     config.add_route('add', '/add')
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
+    config.add_route('detail', '/detail')
     config.scan()
     app = config.make_wsgi_app()
     return app
