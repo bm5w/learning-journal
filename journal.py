@@ -164,14 +164,19 @@ def logout(request):
 
 
 SELECT_SINGLE_ENTRY = """
-SELECT title, text FROM entries WHERE created=%s::timestamp
+SELECT title, text, created FROM entries WHERE id=%s
 """
 
-@view_config(route_name='detail')
-def entry_details(created_time):
+@view_config(route_name='detail', renderer='templates/detail.jinja2')
+def entry_details(request):
     # call read entries
     # select out specific entry based on created time
-    pass
+    db_id = request.matchdict.get('id', -1)
+    cursor = request.db.cursor()
+    cursor.execute(SELECT_SINGLE_ENTRY, (db_id,))
+    keys = ('title', 'text', 'created')
+    entries = [dict(zip(keys, row)) for row in cursor.fetchall()]
+    return {'entries': entries}
 
 
 
@@ -210,7 +215,7 @@ def main():
     config.add_route('add', '/add')
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
-    config.add_route('detail', '/detail')
+    config.add_route('detail', '/detail/{id}')
     config.scan()
     app = config.make_wsgi_app()
     return app

@@ -9,8 +9,10 @@ def the_entry(step, time):
 
 @step('I click on an entry')
 def call_detail_view(step):
-    world.detail_view = entry_details(world.created)
+
+    world.detail_view = app.get(request.route_url('detail', id=entry.created))
 
 @step('I see one entry in detail (\w+)')
 def compare(step, expected):
+
     assert expected in world.detail_view
