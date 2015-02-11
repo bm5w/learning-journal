@@ -97,6 +97,25 @@ def write_entry(request):
     request.db.cursor().execute(INSERT_ENTRY, (title, text, created))
 
 
+UPDATE_ENTRY = """
+UPDATE entries SET (title, text) = (%s, %s) WHERE id=%s
+"""
+
+
+@view_config(route_name='update', request_method='POST')
+def update_entry(request):
+    """Update entry in the db.
+    """
+    try:
+        db_id = request.matchdict.get('id', -1)
+        title = request.params.get('title', None)
+        text = request.params.get('text', None)
+        request.db.cursor().execute(UPDATE_ENTRY, (title, text, db_id))
+    except psycopg2.Error:
+        return HTTPInternalServerError
+    return HTTPFound(request.route_url('detail', id=db_id))
+
+
 @view_config(route_name='add', request_method='POST')
 def add_entry(request):
     """View function for adding entry, passes request to write_entry.
@@ -165,7 +184,7 @@ def logout(request):
 
 
 SELECT_SINGLE_ENTRY = """
-SELECT title, text, created FROM entries WHERE id=%s
+SELECT id, title, text, created FROM entries WHERE id=%s
 """
 
 @view_config(route_name='detail', renderer='templates/detail.jinja2')
@@ -175,10 +194,19 @@ def entry_details(request):
     db_id = request.matchdict.get('id', -1)
     cursor = request.db.cursor()
     cursor.execute(SELECT_SINGLE_ENTRY, (db_id,))
-    keys = ('title', 'text', 'created')
+    keys = ('id', 'title', 'text', 'created')
     entries = [dict(zip(keys, row)) for row in cursor.fetchall()]
     return {'entries': entries}
 
+
+@view_config(route_name='edit', renderer='templates/edit.jinja2')
+def edit_entry(request):
+    db_id = request.matchdict.get('id', -1)
+    cursor = request.db.cursor()
+    cursor.execute(SELECT_SINGLE_ENTRY, (db_id,))
+    keys = ('id', 'title', 'text', 'created')
+    entries = [dict(zip(keys, row)) for row in cursor.fetchall()]
+    return {'entries': entries}
 
 
 def main():
@@ -217,6 +245,8 @@ def main():
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
     config.add_route('detail', '/detail/{id}')
+    config.add_route('edit', '/edit/{id}')
+    config.add_route('update', '/update/{id}')
     config.scan()
     app = config.make_wsgi_app()
     return app
