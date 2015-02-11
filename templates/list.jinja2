@@ -21,7 +21,7 @@
     <ul id="gallery">
       {% for entry in entries %}
       <article class="entry" id="entry={{entry.id}}">
-        <a href="{{ request.route_url('detail', id=entry.id) }}">
+        <a class="detail" href="{{ request.route_url('detail', id=entry.id) }}">
         <h3>{{ entry.title }} </h3>
         <p class="dateline">{{ entry.created.strftime('%b. %d, %Y') }}
         </a>

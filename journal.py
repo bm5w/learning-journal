@@ -115,6 +115,7 @@ def read_entries(request):
     """Return a dictionary with entries and their data.
     Returns by creation date, most recent first.
     """
+    # import pdb; pdb.set_trace()
     cursor = request.db.cursor()
     cursor.execute(SELECT_ENTRIES)
     keys = ('id', 'title', 'text', 'created')
