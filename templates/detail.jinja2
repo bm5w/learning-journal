@@ -7,7 +7,7 @@
       <article class="entry" id="{{entry.id}}">
         <h3>{{ entry.title }}</h3>
         <p class="dateline">{{ entry.created.strftime('%b. %d, %Y') }}
-        <p class="text">{{ entry.text }} </p>
+        <p class="text">{{ entry.text | safe }} </p>
         <a href="{{ request.route_url('edit', id=entry.id) }}">Edit</a>
       </article>
       {% else %}

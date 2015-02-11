@@ -15,6 +15,7 @@ from pyramid.authorization import ACLAuthorizationPolicy
 from cryptacular.bcrypt import BCRYPTPasswordManager
 from pyramid.security import remember, forget
 here = os.path.dirname(os.path.abspath(__file__))
+import markdown
 
 
 DB_SCHEMA = """
@@ -187,6 +188,7 @@ SELECT_SINGLE_ENTRY = """
 SELECT id, title, text, created FROM entries WHERE id=%s
 """
 
+
 @view_config(route_name='detail', renderer='templates/detail.jinja2')
 def entry_details(request):
     # call read entries
@@ -196,6 +198,8 @@ def entry_details(request):
     cursor.execute(SELECT_SINGLE_ENTRY, (db_id,))
     keys = ('id', 'title', 'text', 'created')
     entries = [dict(zip(keys, row)) for row in cursor.fetchall()]
+    # convert text- markdown into html
+    entries[0]['text'] = markdown.markdown(entries[0]['text'], extensions=['codehilite(linenums=True)'])
     return {'entries': entries}
 
 
