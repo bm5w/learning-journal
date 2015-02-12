@@ -201,12 +201,13 @@ SELECT id, title, text, created FROM entries WHERE id=%s
 @view_config(route_name='detail', renderer='templates/detail.jinja2')
 def entry_details(request):
     # call read entries
-    # select out specific entry based on created time
+    # select out specific entry based on id in uri
     db_id = request.matchdict.get('id', -1)
     cursor = request.db.cursor()
     cursor.execute(SELECT_SINGLE_ENTRY, (db_id,))
     keys = ('id', 'title', 'text', 'created')
-    entries = [dict(zip(keys, row)) for row in cursor.fetchall()]
+    row = cursor.fetchone()
+    entries = [dict(zip(keys, row))]
     # convert text- markdown into html
     entries[0]['text'] = markdown.markdown(entries[0]['text'], extensions=['codehilite(linenums=True)', 'fenced_code'])
     return {'entries': entries}
