@@ -199,7 +199,7 @@ def entry_details(request):
     keys = ('id', 'title', 'text', 'created')
     entries = [dict(zip(keys, row)) for row in cursor.fetchall()]
     # convert text- markdown into html
-    entries[0]['text'] = markdown.markdown(entries[0]['text'], extensions=['codehilite(linenums=True)'])
+    entries[0]['text'] = markdown.markdown(entries[0]['text'], extensions=['codehilite(linenums=True)', 'fenced_code'])
     return {'entries': entries}
 
 
