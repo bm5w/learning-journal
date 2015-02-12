@@ -14,8 +14,10 @@ from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from cryptacular.bcrypt import BCRYPTPasswordManager
 from pyramid.security import remember, forget
-here = os.path.dirname(os.path.abspath(__file__))
 import markdown
+
+here = os.path.dirname(os.path.abspath(__file__))
+
 
 
 DB_SCHEMA = """
