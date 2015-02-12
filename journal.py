@@ -131,6 +131,13 @@ def add_entry(request):
         return HTTPInternalServerError
     return HTTPFound(request.route_url('home'))
 
+@view_config(route_name='new', renderer='templates/new.jinja2')
+def add_entry(request):
+    """View function for adding entry, passes request to write_entry.
+    If error, return HTTPInternalServerError. If not, send back to home page.
+    """
+    return {}
+
 
 @view_config(route_name='home', renderer='templates/list.jinja2')
 def read_entries(request):
@@ -250,9 +257,10 @@ def main():
     config.add_route('add', '/add')
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
-    config.add_route('detail', '/detail/{id}')
-    config.add_route('edit', '/edit/{id}')
-    config.add_route('update', '/update/{id}')
+    config.add_route('detail', '/detail/{id:\d+}')
+    config.add_route('edit', '/edit/{id:\d+}')
+    config.add_route('update', '/update/{id:\d+}')
+    config.add_route('new', '/new')
     config.scan()
     app = config.make_wsgi_app()
     return app
