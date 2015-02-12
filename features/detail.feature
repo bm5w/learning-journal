@@ -8,6 +8,6 @@ Feature: Detail Page
 
     Examples:
     | input         | output           |
-    | 1             | IS this owkring? |
+    | 1             | foo              |
     | 2             | flsjdlfjs        |
     | 3             | Does this work?  |
