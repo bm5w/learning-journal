@@ -2,8 +2,7 @@
 {% block body %}
 {% if request.authenticated_userid %}
   <aside>
-    {% for entry in entries %}
-    <form action="{{ request.route_url('edit', id=entry.id) }}" method="POST" class="add_entry">
+    <form action="" method="POST" class="add_entry">
       <div class="field">
         <label for="title">Title</label>
         <input type="text" size="30" name="title" id="title" value="{{ entry.title }}"/>
@@ -16,7 +15,6 @@
         <input type="submit" value="Share" name="Share"/>
       </div>
     </form>
-    {% endfor %}
   </aside>
 {% endif %}
 

@@ -57,6 +57,7 @@ def edit_update(step):
     new_stuff = {}
     new_stuff['title'] = world.edit
     new_stuff['text'] = world.edit
+    print "query: {}".format(query[0])
     world.updated_detail_page = world.app.post(query[0].get('action'), params=new_stuff).follow()
 
 
