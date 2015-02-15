@@ -51,14 +51,20 @@ def edit_update(step):
     world.edit_page = world.app.get(world.link)
 
     # put world.edit into text'
-    soup = world.edit_page.html
-    query = soup.find_all('form')
+    # soup = world.edit_page.html
+    # query = soup.find_all('form')
+    # new_stuff = {}
+    # new_stuff['title'] = world.edit
+    # new_stuff['text'] = world.edit
 
-    new_stuff = {}
-    new_stuff['title'] = world.edit
-    new_stuff['text'] = world.edit
-    print "query: {}".format(query[0])
-    world.updated_detail_page = world.app.post(query[0].get('action'), params=new_stuff).follow()
+    # get form from page, add title and text, submit and follow link
+    world.form = world.edit_page.form
+    world.form['title'] = world.edit
+    world.form['text'] = world.edit
+    world.updated_detail_page = world.form.submit('submit').follow()
+
+    # print "query: {}".format(query[0])
+    # world.updated_detail_page = world.app.post(query[0].get('action'), params=new_stuff).follow()
 
 
 @step('I see the change in its detail page, (\w+)')
