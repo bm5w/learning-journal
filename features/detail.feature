@@ -4,10 +4,10 @@ Feature: Detail Page
     Scenario Outline: Click on one entry
         Given a link <input>
         When I click on an entry link
-        Then I see a one entry in detail <output>
+        Then I see one entry in detail <output>
 
     Examples:
-    | input         | output           |
-    | 1             | foo              |
-    | 2             | flsjdlfjs        |
-    | 3             | Does this work?  |
+    | input         | output            |
+    | 1             | foo               |
+    | 2             | flsjdlfjs         |
+    | 3             | Doesthiswork?     |
