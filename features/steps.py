@@ -97,7 +97,7 @@ def app():
     import os
 
     # settings = {'db': LOCAL_DSN}
-    os.environ['DATABASE_URL'] = TRAVIS
+    os.environ['DATABASE_URL'] = LOCAL_DSN
     app = main()
     world.app = TestApp(app)
 
