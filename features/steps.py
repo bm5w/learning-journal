@@ -88,7 +88,7 @@ def edit_update(step):
     # get form from page, add title and text, submit and follow link
     world.form = world.edit_page.form
     world.form['title'] = world.edit
-    world.form['text'] = world.edit
+    world.form['text'] = """```python\nfoot\n```"""
     world.updated_detail_page = world.form.submit('submit').follow()
 
 
