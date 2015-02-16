@@ -7,7 +7,7 @@ Feature: New Page
         Then I see the entry with the text <output>
 
     Examples:
-    | input           | output         |
-    | foo             | foo            |
-    | flsjdlfjs       | flsjdlfjs      |
-    | Doesthiswork?   | Doesthiswork?  |
+    | input                 | output         |
+    | ```python\nfoo\n```   | foo            |
+    | flsjdlfjs             | flsjdlfjs      |
+    | Doesthiswork?         | Doesthiswork?  |
