@@ -86,6 +86,7 @@ def check_add(step, expected):
 
 
 LOCAL_DSN = 'dbname=learning-journal user=mark'
+TRAVIS = 'dbname=travis_ci_test user=postgres'
 
 
 # Fixture for webtest
