@@ -2,7 +2,7 @@ from lettuce import step
 from lettuce import world
 from lettuce import before
 import re
-import closing
+from contextlib import closing
 import psycopg2
 
 
