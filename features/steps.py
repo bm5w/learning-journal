@@ -146,11 +146,11 @@ def app():
     import os
 
     # settings = {'db': LOCAL_DSN}
-    os.environ['DATABASE_URL'] = LOCAL_DSN
+    os.environ['DATABASE_URL'] = TRAVIS
     app = main()
     world.app = TestApp(app)
     settings = {}
-    settings['db'] = LOCAL_DSN
+    settings['db'] = TRAVIS
     with closing(connect_db(settings)) as db:
         db.cursor().execute(DB_SCHEMA)
         db.commit()
