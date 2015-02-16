@@ -21,7 +21,7 @@ def new_page(step, tt):
     # add content to form on new page
     world.form = world.new_page.form
     world.form['title'] = tt
-    world.form['text'] = tt
+    world.form['text'] = '```python\n{}\n```'.format(tt)
 
 
 @step(u'I click on the post button')

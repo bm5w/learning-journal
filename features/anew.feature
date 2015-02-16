@@ -8,6 +8,6 @@ Feature: New Page
 
     Examples:
     | input                 | output         |
-    | ```python\nfoo\n```   | foo            |
+    | foo                   | foo            |
     | flsjdlfjs             | flsjdlfjs      |
     | Doesthiswork?         | Doesthiswork?  |
