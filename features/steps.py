@@ -117,6 +117,7 @@ def view_detail(step):
 @step(u'I see markdown as html and code colorized (\w+)')
 def check_add(step, expected):
     query = world.body.find('div', 'codehilite')
+    print query
     assert query is not None
 
 
