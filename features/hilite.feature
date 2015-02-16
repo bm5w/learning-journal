@@ -3,6 +3,6 @@ Feature: Markdown and hilite on page
     on detail pages.
 
     Scenario Outline: Go to detail page.
-        Given a detail page 1
+        Given a detail page 12
         When view it
         Then I see markdown as html and code colorized codehilite
