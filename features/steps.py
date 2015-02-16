@@ -2,6 +2,8 @@ from lettuce import step
 from lettuce import world
 from lettuce import before
 import re
+import closing
+import psycopg2
 
 
 ################################
@@ -120,6 +122,20 @@ def check_add(step, expected):
 
 LOCAL_DSN = 'dbname=learning-journal user=mark'
 TRAVIS = 'dbname=travis_ci_test user=postgres'
+DB_SCHEMA = """
+CREATE TABLE IF NOT EXISTS entries (
+    id serial PRIMARY KEY,
+    title VARCHAR (127) NOT NULL,
+    text TEXT NOT NULL,
+    created TIMESTAMP NOT NULL
+)
+"""
+
+
+# connect to the db
+def connect_db(settings):
+    """Return a connection to the configured database"""
+    return psycopg2.connect(settings['db'])
 
 
 # Fixture for webtest
@@ -130,9 +146,14 @@ def app():
     import os
 
     # settings = {'db': LOCAL_DSN}
-    os.environ['DATABASE_URL'] = TRAVIS
+    os.environ['DATABASE_URL'] = LOCAL_DSN
     app = main()
     world.app = TestApp(app)
+    settings = {}
+    settings['db'] = LOCAL_DSN
+    with closing(connect_db(settings)) as db:
+        db.cursor().execute(DB_SCHEMA)
+        db.commit()
 
     # Login for testing editing
     login_data = {'username': 'admin', 'password': 'secret'}
