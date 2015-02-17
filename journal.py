@@ -18,6 +18,9 @@ import markdown
 
 here = os.path.dirname(os.path.abspath(__file__))
 
+MATTLEE = "dbname=test-learning-journal user=postgres password=admin"
+
+ON_MATTS = "C:\\Users\\jefimenko\\code_fellows\\dev_accel\\another-journal\\learning-journal\\journal.py"
 
 
 DB_SCHEMA = """
@@ -64,6 +67,11 @@ def init_db():
     settings['db'] = os.environ.get(
         'DATABASE_URL', 'dbname=learning-journal user=mark'
     )
+
+    # For running on Matt's computer
+    if ON_MATTS == os.path.abspath(__file__):
+        settings['db'] = MATTLEE
+
     with closing(connect_db(settings)) as db:
         db.cursor().execute(DB_SCHEMA)
         db.commit()
@@ -226,6 +234,10 @@ def main():
     settings['db'] = os.environ.get(
         'DATABASE_URL', 'dbname=learning-journal user=mark'
     )
+    # For running on Matt's laptop
+    if ON_MATTS == os.path.abspath(__file__):
+            settings['db'] = MATTLEE
+
     # Add authentication setting configuration
     settings['auth.username'] = os.environ.get('AUTH_USERNAME', 'admin')
     manager = BCRYPTPasswordManager()
