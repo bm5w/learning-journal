@@ -5,6 +5,8 @@ import re
 from contextlib import closing
 import psycopg2
 
+ON_MATTS = "C:\\Users\\jefimenko\\code_fellows\\dev_accel\\another-journal\\learning-journal\\journal.py"
+
 
 ################################
 # Steps for adding entries
@@ -121,6 +123,9 @@ def check_add(step, expected):
 
 
 LOCAL_DSN = 'dbname=learning-journal user=mark'
+# For running on Matt's machine
+MATTLEE = 'dbname=test-learning-journal user=postgres password=admin'
+
 TRAVIS = 'dbname=travis_ci_test user=postgres'
 DB_SCHEMA = """
 CREATE TABLE IF NOT EXISTS entries (
@@ -146,11 +151,21 @@ def app():
     import os
 
     # settings = {'db': LOCAL_DSN}
-    os.environ['DATABASE_URL'] = TRAVIS
+
+    # os.environ['DATABASE_URL'] = TRAVIS
     app = main()
     world.app = TestApp(app)
     settings = {}
+
     settings['db'] = TRAVIS
+
+    # if ON_MATTS == os.path.abspath(__file__):
+    os.environ['DATABASE_URL'] = MATTLEE
+    settings['db'] = MATTLEE
+
+    print os.environ['DATABASE_URL']
+    print settings['db']
+
     with closing(connect_db(settings)) as db:
         db.cursor().execute(DB_SCHEMA)
         db.commit()
