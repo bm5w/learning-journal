@@ -1,16 +1,45 @@
 {% extends "base.jinja2" %}
 {% block body %}
 
+
+
+  <aside>
+    <form action="" method="POST" class="add_entry" id="edit">
+      <div class="field">
+        <label for="title">Title</label>
+        <input type="text" size="30" name="title" id="title" value="{{ entry.title }}"/>
+      </div>
+      <div class="field">
+        <label for="text">Text</label>
+        <textarea name="text" id="text" rows="5" cols="80">{{ entry.text }}</textarea>
+      </div>
+      <div class="control_row">
+        <input type="submit" value="Share" name="Share"/>
+      </div>
+    </form>
+  </aside>
+
+
+
   <div id='wrapper'>
     <ul id="gallery">
       <article class="entry" id="{{entry.id}}">
         <h3>{{ entry.title }}</h3>
-        <p class="dateline">{{ entry.created.strftime('%b. %d, %Y') }}
+        <p class="dateline">{{ entry.created.strftime('%b. %d, %Y') }} </p>
         <p class="text">{{ entry.text | safe }} </p>
         {% if request.authenticated_userid %}
-          <a href="{{ request.route_url('edit', id=entry.id) }}">Edit</a>
+        <a href="{{ request.route_url('edit', id=entry.id) }}">Edit</a>
         {% endif %}
       </article>
     </ul>
   </div>
+
+  <script>
+    $("#edit").hide();
+
+    $("article").children().last().click( function() {
+      $("#edit").show();
+    });
+
+  </script>
 {% endblock %}

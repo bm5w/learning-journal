@@ -114,7 +114,7 @@ UPDATE entries SET (title, text) = (%s, %s) WHERE id=%s
 """
 
 SELECT_MOST_RECENT = """
-SELECT (id, title, text, created) FROM entries ORDER BY created DESC LIMIT 1
+SELECT id, title, text, created FROM entries ORDER BY created DESC LIMIT 1
 """
 
 
@@ -134,12 +134,12 @@ def add2_entry(request):
                 return HTTPInternalServerError
             # return HTTPFound(request.route_url('home'))
             cursor = request.db.cursor()
+            cursor.execute(SELECT_MOST_RECENT)
             return dict(zip(('id', 'title', 'text', 'created'),
-                        cursor.execute(SELECT_MOST_RECENT)))
+                        cursor.fetchone()))
 
     else:
         return HTTPForbidden()
-    return {}
 
 
 @view_config(route_name='home', renderer='templates/list.jinja2')

@@ -5,8 +5,7 @@ import re
 from contextlib import closing
 import psycopg2
 
-ON_MATTS = "C:\\Users\\jefimenko\\code_fellows\\dev_accel\\another-journal\\learning-journal\\journal.py"
-
+ON_MATTS = "C:\\Users\\jefimenko\\"
 
 ################################
 # Steps for adding entries
@@ -159,7 +158,7 @@ def app():
 
     settings['db'] = TRAVIS
 
-    # if ON_MATTS == os.path.abspath(__file__):
+    # if ON_MATTS == os.path.abspath('~'):
     os.environ['DATABASE_URL'] = MATTLEE
     settings['db'] = MATTLEE
 
