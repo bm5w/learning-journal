@@ -91,7 +91,7 @@ aside textarea, aside #title{
   width: 80%;
   margin: 1, 10%;
   display: inline-block;
-  text-align: center;
+  text-align: left;
 }
 
 aside input{

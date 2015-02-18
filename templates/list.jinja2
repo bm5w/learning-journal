@@ -19,6 +19,37 @@
       </form>
     </aside>
   {% endif %}
+
+<script type="text/javascript">
+$('#new').hide()
+$('#new_post').click(function(x) {
+  $('#new').show();
+  x.preventDefault();
+})
+
+$('#new').submit(function(event) {
+  var title_input = $('#title').val();
+  var text_input = $('#text').val();
+  $.ajax({
+    type: "POST",
+    url: "new",
+    dataType: "json",
+    data: { title: title_input, text: text_input},
+  }).done(function(json) {
+    var temp = $('#gallery').children().children().eq(0).clone()
+    temp.attr('id', 'entry='+json.id)
+    temp.children().first().attr('href', '/detail/'+json.id)
+    temp.children().children().first().text(json.title)
+    temp.children().children().last().text(json.created)
+    temp.insertAfter($('#gallery').children().eq(0))
+
+    $('#gallery').children().first().after($('#gallery').first().next().clone().html())
+
+  })
+  event.preventDefault();
+})
+</script>
+
   <div id='wrapper'>
     <ul id="gallery">
       <div class="hidden">
@@ -46,27 +77,3 @@
     </ul>
   </div>
 {% endblock %}
-<script type="text/javascript">
-$('#new').submit(function(event) {
-  var title_input = $('#title').val();
-  var text_input = $('#text').val();
-  $.ajax({
-    type: "POST",
-    url: "new",
-    dataType: "json",
-    data: { title: title_input, text: text_input},
-  }).done(function(json) {
-
-    var temp = $('#gallery').children().eq(0).clone()
-    temp.attr('id', 'entry='+json.id)
-    temp.children().first().attr('href', '/detail/'+json.id)
-    temp.children().children().first().text(json.title)
-    temp.children().children().last().text(json.created)
-    temp.insertAfter($('#gallery').children().eq(0))
-
-    $('#gallery').children().first().after($('#gallery').first().next().clone().html())
-
-  })
-  event.preventDefault();
-})
-</script>
