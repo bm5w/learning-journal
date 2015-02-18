@@ -1,26 +1,51 @@
 {% extends "base.jinja2" %}
 {% block body %}
-{% if request.authenticated_userid %}
-<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+  {% if request.authenticated_userid %}
+  <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
 
-  <aside>
-    <form action="" method="POST" class="add_entry" id="new">
-      <div class="field">
-        <label for="title">Title</label>
-        <input type="text" size="30" name="title" id="title"/>
+    <aside>
+      <form action="" method="POST" class="add_entry" id="new">
+        <div class="field">
+          <label for="title">Title</label>
+          <input type="text" size="30" name="title" id="title"/>
+        </div>
+        <div class="field">
+          <label for="text">Text</label>
+          <textarea name="text" id="text" rows="5" cols="80"></textarea>
+        </div>
+        <div class="control_row">
+          <input type="submit" value="Share" name="Share" />
+        </div>
+      </form>
+    </aside>
+  {% endif %}
+  <div id='wrapper'>
+    <ul id="gallery">
+      <div class="hidden">
+        <li class="entry" id="">
+          <a class="detail">
+          <h3></h3>
+          <p class="dateline"></p>
+          </a>
+        </li>
       </div>
-      <div class="field">
-        <label for="text">Text</label>
-        <textarea name="text" id="text" rows="5" cols="80"></textarea>
-      </div>
-      <div class="control_row">
-        <input type="submit" value="Share" name="Share" />
-      </div>
-    </form>
-  </aside>
-{% endif %}
 
+      {% for entry in entries %}
+      <li class="entry" id="entry={{entry.id}}">
+        <a class="detail" href="{{ request.route_url('detail', id=entry.id) }}">
+        <h3>{{ entry.title }} </h3>
+        <p class="dateline">{{ entry.created.strftime('%b. %d, %Y') }}</p>
+        </a>
+      </li>
+      {% else %}
+      <div class="entry">
+        <p><em>No entries here so far</em></p>
+      </div>
+      {% endfor %}
 
+    </ul>
+  </div>
+{% endblock %}
 <script type="text/javascript">
 $('#new').submit(function(event) {
   var title_input = $('#title').val();
@@ -45,31 +70,3 @@ $('#new').submit(function(event) {
   event.preventDefault();
 })
 </script>
-
-
-  <div id='wrapper'>
-    <ul id="gallery">
-
-      <li class="entry" id="">
-        <a class="detail">
-        <h3></h3>
-        <p class="dateline"></p>
-        </a>
-      </li>
-
-      {% for entry in entries %}
-      <li class="entry" id="entry={{entry.id}}">
-        <a class="detail" href="{{ request.route_url('detail', id=entry.id) }}">
-        <h3>{{ entry.title }} </h3>
-        <p class="dateline">{{ entry.created.strftime('%b. %d, %Y') }}</p>
-        </a>
-      </li>
-      {% else %}
-      <div class="entry">
-        <p><em>No entries here so far</em></p>
-      </div>
-      {% endfor %}
-
-    </ul>
-  </div>
-{% endblock %}
