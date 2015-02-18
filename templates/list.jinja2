@@ -28,10 +28,19 @@ $('#new').submit(function(event) {
   $.ajax({
     type: "POST",
     url: "new",
+    dataType: "json",
     data: { title: title_input, text: text_input},
-  }).done(function(html) {
-    $('#gallery').prepend(
-    title_input, text_input);
+  }).done(function(json) {
+
+    var temp = $('#gallery').children().eq(0).clone()
+    temp.attr('id', 'entry='+json.id)
+    temp.children().first().attr('href', '/detail/'+json.id)
+    temp.children().children().first().text(json.title)
+    temp.children().children().last().text(json.created)
+    temp.insertAfter($('#gallery').children().eq(0))
+
+    $('#gallery').children().first().after($('#gallery').first().next().clone().html())
+
   })
   event.preventDefault();
 })
@@ -41,20 +50,20 @@ $('#new').submit(function(event) {
   <div id='wrapper'>
     <ul id="gallery">
 
-      <article class="entry">
+      <li class="entry" id="">
         <a class="detail">
         <h3></h3>
-        <p class="dateline">
+        <p class="dateline"></p>
         </a>
-      </article>
+      </li>
 
       {% for entry in entries %}
-      <article class="entry" id="entry={{entry.id}}">
+      <li class="entry" id="entry={{entry.id}}">
         <a class="detail" href="{{ request.route_url('detail', id=entry.id) }}">
         <h3>{{ entry.title }} </h3>
-        <p class="dateline">{{ entry.created.strftime('%b. %d, %Y') }}
+        <p class="dateline">{{ entry.created.strftime('%b. %d, %Y') }}</p>
         </a>
-      </article>
+      </li>
       {% else %}
       <div class="entry">
         <p><em>No entries here so far</em></p>

@@ -114,7 +114,7 @@ UPDATE entries SET (title, text) = (%s, %s) WHERE id=%s
 """
 
 SELECT_MOST_RECENT = """
-SELECT (id, title, text, created) FROM entries ORDER BY created DESC LIMIT 1
+SELECT id, title, text, created FROM entries ORDER BY created DESC LIMIT 1
 """
 
 
@@ -134,9 +134,11 @@ def add2_entry(request):
                 return HTTPInternalServerError
             # return HTTPFound(request.route_url('home'))
             cursor = request.db.cursor()
-            return dict(zip(('id', 'title', 'text', 'created'),
-                        cursor.execute(SELECT_MOST_RECENT)))
-
+            cursor.execute(SELECT_MOST_RECENT)
+            keys = ('id', 'title', 'text', 'created')
+            temp = dict(zip(keys, cursor.fetchone()))
+            temp['created'] = temp['created'].strftime('%b %d, %Y')
+            return temp
     else:
         return HTTPForbidden()
     return {}
