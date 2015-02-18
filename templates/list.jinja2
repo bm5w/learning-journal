@@ -1,7 +1,7 @@
 {% extends "base.jinja2" %}
 {% block body %}
 {% if request.authenticated_userid %}
-<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+
 
   <aside>
     <form action="" method="POST" class="add_entry" id="new">
@@ -25,6 +25,7 @@
 $('#new').submit(function(event) {
   var title_input = $('#title').val();
   var text_input = $('#text').val();
+
   $.ajax({
     type: "POST",
     url: "new",
@@ -44,7 +45,7 @@ $('#new').submit(function(event) {
       <article class="entry">
         <a class="detail">
         <h3></h3>
-        <p class="dateline">
+        <p class="dateline"></p>
         </a>
       </article>
 
@@ -52,7 +53,7 @@ $('#new').submit(function(event) {
       <article class="entry" id="entry={{entry.id}}">
         <a class="detail" href="{{ request.route_url('detail', id=entry.id) }}">
         <h3>{{ entry.title }} </h3>
-        <p class="dateline">{{ entry.created.strftime('%b. %d, %Y') }}
+        <p class="dateline">{{ entry.created.strftime('%b. %d, %Y') }}</p>
         </a>
       </article>
       {% else %}
