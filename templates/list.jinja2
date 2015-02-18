@@ -34,7 +34,7 @@ $('#new').submit(function(event) {
     type: "POST",
     url: "new",
     dataType: "json",
-    data: { title: title_input, text: text_input},
+    data: { title: title_input, text: text_input },
   }).done(function(json) {
     var temp = $('#gallery').children().children().eq(0).clone()
     temp.attr('id', 'entry='+json.id)
@@ -42,9 +42,6 @@ $('#new').submit(function(event) {
     temp.children().children().first().text(json.title)
     temp.children().children().last().text(json.created)
     temp.insertAfter($('#gallery').children().eq(0))
-
-    $('#gallery').children().first().after($('#gallery').first().next().clone().html())
-
   })
   event.preventDefault();
 })

@@ -234,7 +234,6 @@ def edit_entry(request):
         return {'entry': entry}
     else:
         return HTTPForbidden()
-    return {}
 
 
 def main():
