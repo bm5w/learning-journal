@@ -1,27 +1,33 @@
 {% extends "base.jinja2" %}
 {% block body %}
-{% if request.authenticated_userid %}
 
+  {% if request.authenticated_userid %}
+  <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
 
-  <aside>
-    <form action="" method="POST" class="add_entry" id="new">
-      <div class="field">
-        <label for="title">Title</label>
-        <input type="text" size="30" name="title" id="title"/>
-      </div>
-      <div class="field">
-        <label for="text">Text</label>
-        <textarea name="text" id="text" rows="5" cols="80"></textarea>
-      </div>
-      <div class="control_row">
-        <input type="submit" value="Share" name="Share" />
-      </div>
-    </form>
-  </aside>
-{% endif %}
-
+    <aside>
+      <form action="" method="POST" class="add_entry" id="new">
+        <div class="field">
+          <label for="title">Title</label>
+          <input type="text" size="30" name="title" id="title"/>
+        </div>
+        <div class="field">
+          <label for="text">Text</label>
+          <textarea name="text" id="text" rows="5" cols="80"></textarea>
+        </div>
+        <div class="control_row">
+          <input type="submit" value="Share" name="Share" />
+        </div>
+      </form>
+    </aside>
+  {% endif %}
 
 <script type="text/javascript">
+$('#new').hide()
+$('#new_post').click(function(x) {
+  $('#new').show();
+  x.preventDefault();
+})
+
 $('#new').submit(function(event) {
   var title_input = $('#title').val();
   var text_input = $('#text').val();
@@ -29,33 +35,38 @@ $('#new').submit(function(event) {
   $.ajax({
     type: "POST",
     url: "new",
-    data: { title: title_input, text: text_input},
-  }).done(function(html) {
-    $('#gallery').prepend(
-    title_input, text_input);
+    dataType: "json",
+    data: { title: title_input, text: text_input },
+  }).done(function(json) {
+    var temp = $('#gallery').children().children().eq(0).clone()
+    temp.attr('id', 'entry='+json.id)
+    temp.children().first().attr('href', '/detail/'+json.id)
+    temp.children().children().first().text(json.title)
+    temp.children().children().last().text(json.created)
+    temp.insertAfter($('#gallery').children().eq(0))
   })
   event.preventDefault();
 })
 </script>
 
-
   <div id='wrapper'>
     <ul id="gallery">
-
-      <article class="entry">
-        <a class="detail">
-        <h3></h3>
-        <p class="dateline"></p>
-        </a>
-      </article>
+      <div class="hidden">
+        <li class="entry" id="">
+          <a class="detail">
+          <h3></h3>
+          <p class="dateline"></p>
+          </a>
+        </li>
+      </div>
 
       {% for entry in entries %}
-      <article class="entry" id="entry={{entry.id}}">
+      <li class="entry" id="entry={{entry.id}}">
         <a class="detail" href="{{ request.route_url('detail', id=entry.id) }}">
         <h3>{{ entry.title }} </h3>
         <p class="dateline">{{ entry.created.strftime('%b. %d, %Y') }}</p>
         </a>
-      </article>
+      </li>
       {% else %}
       <div class="entry">
         <p><em>No entries here so far</em></p>

@@ -84,28 +84,67 @@ Page: portfolio
   margin: 0;
   padding: 0;
   list-style: none;
+  background-color: #ffffff;
+}
+
+aside textarea, aside #title{
+  width: 80%;
+  margin: 1, 10%;
+  display: inline-block;
+  text-align: left;
+}
+
+aside input{
+  float: right;
+  margin-right: 10%;
+  text-align: center;
+}
+
+aside label {
+  padding: 1em;
+  text-align: center;
+}
+
+
+/*#add_entry div.field{
+  width:90%;
+}*/
+
+#gallery div.hidden{
+  visibility: hidden;
+}
+
+#gallery ul{
+  padding: 0;
+  margin: 0;
 }
 
 #gallery li{
-  float: left;
-  width: 45%;
+  width: 95%;
   margin: 2.5%;
   background-color: #f5f5f5;
   color: #bdc3c7;
 }
+
+#gallery h3{
+  margin: .25em;
+  padding: .1em;
+}
+
 /* captions */
-#gallery li a p {
-  margin: 0;
-  padding: 5%;
-  font-size: 0.75em;
+#gallery li p {
+  margin: .1em;
+  padding: .25em;
+  font-size: 1em;
   color: #bdc3c7;
 }
 
 /*******************************
 Page: new and edit
 *******************************/
-.post-form textarea, .post-form input {
+/*.post-form textarea, .post-form input {
   width:95%;
+  height:75%;
   margin: 2.5%;
 }
 
@@ -116,7 +155,7 @@ Page: new and edit
 .save {
   float: right;
 }
-
+*/
 
 /*******************************
 Footer
@@ -232,15 +271,13 @@ Responsive
   /*******************************
 Two column layout
 *******************************/
-
+/*
   #primary {
     width: 50%;
-    float: left;
   }
 
   #secondary {
     width: 40%;
-    float: right;
   }
   #gallery li {
     width:28.3333%;
@@ -248,7 +285,7 @@ Two column layout
   #gallery li:nth-child(4n) {
     clear: left;
   }
-}
+}*/
 
 @media screen and (min-width: 660px) {
 /*******************************

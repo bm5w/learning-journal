@@ -6,7 +6,6 @@
     <!--[if lt IE 9]>
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <link href="/static/style.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="/static/normalize.css">
     <link href='http://fonts.googleapis.com/css?family=Lato:400,700,900|Open+Sans:400,600,700,800' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="/static/main.css">
@@ -28,7 +27,7 @@
           {% if not request.authenticated_userid %}
             <li><a href="{{ request.route_url('login') }}">Login</a></li>
           {% else %}
-            <li><a href="{{ request.route_url('new') }}">New</a></li>
+            <li><a href="{{ request.route_url('new') }}" id="new_post">New</a></li>
             <li><a href="{{ request.route_url('logout') }}">Logout</a></li>
           {% endif %}
           </aside>

@@ -135,9 +135,10 @@ def add2_entry(request):
             # return HTTPFound(request.route_url('home'))
             cursor = request.db.cursor()
             cursor.execute(SELECT_MOST_RECENT)
-            return dict(zip(('id', 'title', 'text', 'created'),
-                        cursor.fetchone()))
-
+            keys = ('id', 'title', 'text', 'created')
+            temp = dict(zip(keys, cursor.fetchone()))
+            temp['created'] = temp['created'].strftime('%b %d, %Y')
+            return temp
     else:
         return HTTPForbidden()
 
@@ -232,7 +233,6 @@ def edit_entry(request):
         return {'entry': entry}
     else:
         return HTTPForbidden()
-    return {}
 
 
 def main():
