@@ -26,7 +26,7 @@
       <article class="entry" id="{{entry.id}}">
         <h3>{{ entry.title }}</h3>
         <p class="dateline">{{ entry.created.strftime('%b. %d, %Y') }} </p>
-        <p class="text">{{ entry.text | safe }} </p>
+        <div class="text">{{ entry.display_text | safe }} </div>
         {% if request.authenticated_userid %}
         <a href="{{ request.route_url('edit', id=entry.id) }}">Edit</a>
         {% endif %}
@@ -37,9 +37,35 @@
   <script>
     $("#edit").hide();
 
-    $("article").children().last().click( function() {
+    $("article").children().last().click( function(click) {
       $("#edit").show();
+      $("article").hide();
+      click.preventDefault();
     });
+
+    $("form").submit(function(submission) {
+
+      var title_input = $('#title').val();
+      var text_input = $('#text').val();
+      var entry_id = $('article').attr('id');
+
+      $.ajax({
+        type: "POST",
+        url: "/edit",
+        dataType: "json",
+        data: { id: entry_id, title: title_input, text: text_input },
+      }).done(function(json) {
+        $("article h3").text(json.title);
+
+        $("article div.text p").replaceWith(json.text);
+
+        $("#edit").hide();
+        $("article").show();
+      });
+
+      submission.preventDefault();
+
+    })
 
   </script>
 {% endblock %}
