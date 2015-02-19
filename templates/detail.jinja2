@@ -29,15 +29,21 @@
         <div class="text">{{ entry.display_text | safe }} </div>
         {% if request.authenticated_userid %}
         <a href="{{ request.route_url('edit', id=entry.id) }}">Edit</a>
+        <a href="https://twitter.com/share" class="twitter-share-button" data-text="" data-via="MarkSaiget">Tweet</a>
         {% endif %}
       </article>
     </ul>
   </div>
 
   <script>
+    var twit = $(".twitter-share-button").clone();
+
     $("#edit").hide();
 
-    $("article").children().last().click( function(click) {
+    $(".twitter-share-button").attr('data-text', $('#title').val())
+    $.getScript("http://platform.twitter.com/widgets.js");
+
+    $("article").children().last().prev().click( function(click) {
       $("#edit").show();
       $("article").hide();
       click.preventDefault();
@@ -57,6 +63,12 @@
       }).done(function(json) {
         $("article h3").text(json.title);
 
+        $("iframe").remove();
+        twit.attr('data-text', json.title);
+        $("article").children().last().after(twit);
+        twit = $(".twitter-share-button").clone();
+        twttr.widgets.load();
+
         $("article div.text p").replaceWith(json.text);
 
         $("#edit").hide();
@@ -66,6 +78,6 @@
       submission.preventDefault();
 
     })
-
   </script>
+
 {% endblock %}

@@ -216,11 +216,6 @@ def entry_details(request):
 @view_config(route_name='edit', renderer='json')
 def edit_entry(request):
     if request.authenticated_userid:
-        # db_id = request.matchdict.get('id', -1)
-        # cursor = request.db.cursor()
-        # cursor.execute(SELECT_SINGLE_ENTRY, (db_id,))
-        # keys = ('id', 'title', 'text', 'created')
-        # entry = dict(zip(keys, cursor.fetchone()[0]))
         if request.method == 'POST':
             try:
                 db_id = request.params.get('id', -1)
@@ -229,8 +224,6 @@ def edit_entry(request):
                 request.db.cursor().execute(UPDATE_ENTRY, (title, text, db_id))
             except psycopg2.Error:
                 return HTTPInternalServerError
-            # return HTTPFound(request.route_url('detail', id=db_id))
-        # return {'entry': entry}
             text = markdown.markdown(text, extensions=['codehilite(linenums=True)', 'fenced_code'])
         return {'title': title, 'text': text}
     else:
