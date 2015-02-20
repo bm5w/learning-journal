@@ -15,6 +15,14 @@ from pyramid.authorization import ACLAuthorizationPolicy
 from cryptacular.bcrypt import BCRYPTPasswordManager
 from pyramid.security import remember, forget
 import markdown
+import sqlalchemy as sa
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import (
+    scoped_session,
+    sessionmaker,
+    )
+from zope.sqlalchemy import ZopeTransactionExtension
+import json
 
 here = os.path.dirname(os.path.abspath(__file__))
 
@@ -23,90 +31,132 @@ MATTLEE = "dbname=test-learning-journal user=postgres password=admin"
 ON_MATTS = "C:\\Users\\jefimenko\\code_fellows\\dev_accel\\another-journal\\learning-journal\\journal.py"
 
 
-DB_SCHEMA = """
-CREATE TABLE IF NOT EXISTS entries (
-    id serial PRIMARY KEY,
-    title VARCHAR (127) NOT NULL,
-    text TEXT NOT NULL,
-    created TIMESTAMP NOT NULL
-)
-"""
-INSERT_ENTRY = """
-INSERT INTO entries(title, text, created) VALUES (%s, %s, %s)
-"""
-# READ_ENTRIES = """
-# SELECT * FROM entries
+# DB_SCHEMA = """
+# CREATE TABLE IF NOT EXISTS entries (
+#     id serial PRIMARY KEY,
+#     title VARCHAR (127) NOT NULL,
+#     text TEXT NOT NULL,
+#     created TIMESTAMP NOT NULL
+# )
 # """
-SELECT_ENTRIES = """
-SELECT id, title, text, created FROM entries ORDER BY created DESC
-"""
+# INSERT_ENTRY = """
+# INSERT INTO entries(title, text, created) VALUES (%s, %s, %s)
+# """
+# # READ_ENTRIES = """
+# # SELECT * FROM entries
+# # """
+# SELECT_ENTRIES = """
+# SELECT id, title, text, created FROM entries ORDER BY created DESC
+# """
 
-# add this just below the SQL table definition we just created
+# replaces def close, open, and connect db
+DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
+Base = declarative_base()
+
+
+class Entry(Base):
+    __tablename__ = 'entries'
+    id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
+    title = sa.Column(sa.Unicode(127), nullable=False)
+    text = sa.Column(sa.UnicodeText, nullable=False)
+    created = sa.Column(
+        sa.DateTime, nullable=False, default=datetime.datetime.utcnow
+    )
+
+    def __repr__(self):
+        return u"{}: {}".format(self.__class__.__name__, self.title)
+
+    @classmethod
+    def all(cls):
+        return DBSession.query(cls).order_by(cls.created.desc()).all()
+
+    @classmethod
+    def by_id(cls, id):
+        return DBSession.query(cls).filter(cls.id==id).one()
+
+    @classmethod
+    def from_request(cls, request):
+        title = request.params.get('title', None)
+        text = request.params.get('text', None)
+        created = datetime.datetime.utcnow()
+        new_entry = cls(title=title, text=text, created=created)
+        DBSession.add(new_entry)
+
+    @classmethod
+    def most_recent(cls):
+        return DBSession.query(cls).order_by(cls.created.desc()).first()
+
+    @classmethod
+    def from_request_edit(cls, request):
+        title = request.params.get('title', None)
+        text = request.params.get('text', None)
+        id = request.params.get('id', None)
+        DBSession.query(cls).filter(cls.id == id).update({"title": title, "text": text})
+
 logging.basicConfig()
 log = logging.getLogger(__file__)
-
 
 # @view_config(route_name='home', renderer='string')
 # def home(request):
 #     return "Hello World"
 
 
-# connect to the db
-def connect_db(settings):
-    """Return a connection to the configured database"""
-    return psycopg2.connect(settings['db'])
+# # connect to the db
+# def connect_db(settings):
+#     """Return a connection to the configured database"""
+#     return psycopg2.connect(settings['db'])
 
 
-# a function to initialize db
-def init_db():
-    """Create database dables defined by DB_SCHEMA
+# # a function to initialize db
+# def init_db():
+#     """Create database dables defined by DB_SCHEMA
 
-    Warning: This function will not update existing table definitions
-    """
-    settings = {}
-    settings['db'] = os.environ.get(
-        'DATABASE_URL', 'dbname=learning-journal user=mark'
-    )
+#     Warning: This function will not update existing table definitions
+#     """
+#     settings = {}
+#     settings['db'] = os.environ.get(
+#         'DATABASE_URL', 'dbname=learning-journal user=mark'
+#     )
 
-    # For running on Matt's computer
-    if ON_MATTS == os.path.abspath(__file__):
-        settings['db'] = MATTLEE
+#     # For running on Matt's computer
+#     if ON_MATTS == os.path.abspath(__file__):
+#         settings['db'] = MATTLEE
 
-    with closing(connect_db(settings)) as db:
-        db.cursor().execute(DB_SCHEMA)
-        db.commit()
-
-
-@subscriber(NewRequest)
-def open_connection(event):
-    request = event.request
-    settings = request.registry.settings
-    request.db = connect_db(settings)
-    request.add_finished_callback(close_connection)
+#     with closing(connect_db(settings)) as db:
+#         db.cursor().execute(DB_SCHEMA)
+#         db.commit()
 
 
-def close_connection(request):
-    """close the database connection for this request
-
-    If there has been an error in the processing of the request, abort any
-    open transactions.
-    """
-    db = getattr(request, 'db', None)
-    if db is not None:
-        if request.exception is not None:
-            db.rollback()
-        else:
-            db.commit()
-        request.db.close()
+# @subscriber(NewRequest)
+# def open_connection(event):
+#     request = event.request
+#     settings = request.registry.settings
+#     request.db = connect_db(settings)
+#     request.add_finished_callback(close_connection)
 
 
-def write_entry(request):
-    """Create an entry in the db."""
-    title = request.params.get('title', None)
-    text = request.params.get('text', None)
-    created = datetime.datetime.utcnow()
-    request.db.cursor().execute(INSERT_ENTRY, (title, text, created))
-    return
+# def close_connection(request):
+#     """close the database connection for this request
+
+#     If there has been an error in the processing of the request, abort any
+#     open transactions.
+#     """
+#     db = getattr(request, 'db', None)
+#     if db is not None:
+#         if request.exception is not None:
+#             db.rollback()
+#         else:
+#             db.commit()
+#         request.db.close()
+
+
+# def write_entry(request):
+#     """Create an entry in the db."""
+#     title = request.params.get('title', None)
+#     text = request.params.get('text', None)
+#     created = datetime.datetime.utcnow()
+#     request.db.cursor().execute(INSERT_ENTRY, (title, text, created))
+#     return
 
 
 UPDATE_ENTRY = """
@@ -117,28 +167,30 @@ SELECT_MOST_RECENT = """
 SELECT id, title, text, created FROM entries ORDER BY created DESC LIMIT 1
 """
 
-
+### ported to ORM, but does not update database
 @view_config(route_name='new', renderer='json')
 def add2_entry(request):
     """View function for adding entry, passes request to write_entry.
     If error, return HTTPInternalServerError. If not, send back to home page.
     """
-    # if request.authenticated_userid:
-    # else: from pyramid.httpexceptions forbidden
     if request.authenticated_userid:
         if request.method == 'POST':
             try:
-                write_entry(request)
+                # write_entry(request)
+                Entry.from_request(request)
             except psycopg2.Error:
                 # this will catch any errors generated by the database
                 return HTTPInternalServerError
             # return HTTPFound(request.route_url('home'))
-            cursor = request.db.cursor()
-            cursor.execute(SELECT_MOST_RECENT)
-            keys = ('id', 'title', 'text', 'created')
-            temp = dict(zip(keys, cursor.fetchone()))
-            temp['created'] = temp['created'].strftime('%b %d, %Y')
-            return temp
+            # cursor = request.db.cursor()
+            # cursor.execute(SELECT_MOST_RECENT)
+            # keys = ('id', 'title', 'text', 'created')
+            # temp = dict(zip(keys, cursor.fetchone()))
+            temp = Entry.most_recent()
+            # import pdb; pdb.set_trace()
+            temp.created = temp.created.strftime('%b %d, %Y')
+            del temp.__dict__['_sa_instance_state']
+            return temp.__dict__
     else:
         return HTTPForbidden()
 
@@ -148,11 +200,11 @@ def read_entries(request):
     """Return a dictionary with entries and their data.
     Returns by creation date, most recent first.
     """
-    # import pdb; pdb.set_trace()
-    cursor = request.db.cursor()
-    cursor.execute(SELECT_ENTRIES)
-    keys = ('id', 'title', 'text', 'created')
-    entries = [dict(zip(keys, row)) for row in cursor.fetchall()]
+    # cursor = request.db.cursor()
+    # cursor.execute(SELECT_ENTRIES)
+    # keys = ('id', 'title', 'text', 'created')
+    # entries = [dict(zip(keys, row)) for row in cursor.fetchall()]
+    entries = Entry.all()
     return {'entries': entries}
 
 
@@ -203,29 +255,34 @@ SELECT id, title, text, created FROM entries WHERE id=%s
 def entry_details(request):
     # call read entries
     # select out specific entry based on id in uri
-    db_id = request.matchdict.get('id', -1)
-    cursor = request.db.cursor()
-    cursor.execute(SELECT_SINGLE_ENTRY, (db_id,))
-    keys = ('id', 'title', 'text', 'created')
-    entry = dict(zip(keys, cursor.fetchone()))
+    # db_id = request.matchdict.get('id', -1)
+    # cursor = request.db.cursor()
+    # cursor.execute(SELECT_SINGLE_ENTRY, (db_id,))
+    # keys = ('id', 'title', 'text', 'created')
+    # entry = dict(zip(keys, cursor.fetchone()))
     # convert text- markdown into html
-    entry['display_text'] = markdown.markdown(entry['text'], extensions=['codehilite(linenums=True)', 'fenced_code'])
+    # entry['display_text'] = markdown.markdown(entry['text'], extensions=['codehilite(linenums=True)', 'fenced_code'])
+    entry = Entry.by_id(request.matchdict.get('id', -1))
+    del entry.__dict__['_sa_instance_state']
+    entry.display_text = markdown.markdown(entry.text, extensions=['codehilite(linenums=True)', 'fenced_code'])
     return {'entry': entry, }
 
 
+# ported to ORM, but does not update database
 @view_config(route_name='edit', renderer='json')
 def edit_entry(request):
     if request.authenticated_userid:
         if request.method == 'POST':
             try:
-                db_id = request.params.get('id', -1)
-                title = request.params.get('title', None)
-                text = request.params.get('text', None)
-                request.db.cursor().execute(UPDATE_ENTRY, (title, text, db_id))
+                # db_id = request.params.get('id', -1)
+                # title = request.params.get('title', None)
+                # text = request.params.get('text', None)
+                # request.db.cursor().execute(UPDATE_ENTRY, (title, text, db_id))
+                Entry.from_request_edit(request)
             except psycopg2.Error:
                 return HTTPInternalServerError
-            text = markdown.markdown(text, extensions=['codehilite(linenums=True)', 'fenced_code'])
-        return {'title': title, 'text': text}
+            text = markdown.markdown(request.params.get('text', None), extensions=['codehilite(linenums=True)', 'fenced_code'])
+        return {'title': request.params.get('title', None), 'text': text}
     else:
         return HTTPForbidden()
 
@@ -235,12 +292,18 @@ def main():
     settings = {}
     settings['reload_all'] = os.environ.get('DEBUG', True)
     settings['debug_all'] = os.environ.get('DEBUG', True)
-    settings['db'] = os.environ.get(
-        'DATABASE_URL', 'dbname=learning-journal user=mark'
+    # settings['db'] = os.environ.get(
+    #     'DATABASE_URL', 'dbname=learning-journal user=mark'
+    # )
+    settings['sqlalchemy.url'] = os.environ.get(
+        # must be rfc1738 URL
+        'DATABASE_URL', 'postgresql://mark:@localhost:5432/learning-journal'
     )
-    # For running on Matt's laptop
-    if ON_MATTS == os.path.abspath(__file__):
-            settings['db'] = MATTLEE
+    engine = sa.engine_from_config(settings, 'sqlalchemy.')
+    DBSession.configure(bind=engine)
+    # # For running on Matt's laptop
+    # if ON_MATTS == os.path.abspath(__file__):
+    #         settings['db'] = MATTLEE
 
     # Add authentication setting configuration
     settings['auth.username'] = os.environ.get('AUTH_USERNAME', 'admin')
