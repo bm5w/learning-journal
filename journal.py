@@ -253,15 +253,6 @@ SELECT id, title, text, created FROM entries WHERE id=%s
 
 @view_config(route_name='detail', renderer='templates/detail.jinja2')
 def entry_details(request):
-    # call read entries
-    # select out specific entry based on id in uri
-    # db_id = request.matchdict.get('id', -1)
-    # cursor = request.db.cursor()
-    # cursor.execute(SELECT_SINGLE_ENTRY, (db_id,))
-    # keys = ('id', 'title', 'text', 'created')
-    # entry = dict(zip(keys, cursor.fetchone()))
-    # convert text- markdown into html
-    # entry['display_text'] = markdown.markdown(entry['text'], extensions=['codehilite(linenums=True)', 'fenced_code'])
     entry = Entry.by_id(request.matchdict.get('id', -1))
     del entry.__dict__['_sa_instance_state']
     entry.display_text = markdown.markdown(entry.text, extensions=['codehilite(linenums=True)', 'fenced_code'])
@@ -274,10 +265,6 @@ def edit_entry(request):
     if request.authenticated_userid:
         if request.method == 'POST':
             try:
-                # db_id = request.params.get('id', -1)
-                # title = request.params.get('title', None)
-                # text = request.params.get('text', None)
-                # request.db.cursor().execute(UPDATE_ENTRY, (title, text, db_id))
                 Entry.from_request_edit(request)
             except psycopg2.Error:
                 return HTTPInternalServerError
@@ -301,10 +288,6 @@ def main():
     )
     engine = sa.engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
-    # # For running on Matt's laptop
-    # if ON_MATTS == os.path.abspath(__file__):
-    #         settings['db'] = MATTLEE
-
     # Add authentication setting configuration
     settings['auth.username'] = os.environ.get('AUTH_USERNAME', 'admin')
     manager = BCRYPTPasswordManager()
@@ -327,6 +310,7 @@ def main():
 
     )
     config.include('pyramid_jinja2')
+    config.include('pyramid_tm')
     config.add_static_view('static', os.path.join(here, 'static'))
     config.add_route('home', '/')
     config.add_route('login', '/login')

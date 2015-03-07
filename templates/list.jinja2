@@ -22,6 +22,7 @@
   {% endif %}
 
 <script type="text/javascript">
+$('#new_post').show()
 $('#new').hide()
 $('#new_post').click(function(x) {
   $('#new').show();
@@ -44,6 +45,9 @@ $('#new').submit(function(event) {
     temp.children().children().first().text(json.title)
     temp.children().children().last().text(json.created)
     temp.insertAfter($('#gallery').children().eq(0))
+    $('#new').hide();
+    $('#title').val('');
+    $('#text').val('');
   })
   event.preventDefault();
 })
