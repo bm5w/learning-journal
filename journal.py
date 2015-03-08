@@ -26,9 +26,9 @@ import json
 
 here = os.path.dirname(os.path.abspath(__file__))
 
-MATTLEE = "dbname=test-learning-journal user=postgres password=admin"
+# MATTLEE = "dbname=test-learning-journal user=postgres password=admin"
 
-ON_MATTS = "C:\\Users\\jefimenko\\code_fellows\\dev_accel\\another-journal\\learning-journal\\journal.py"
+# ON_MATTS = "C:\\Users\\jefimenko\\code_fellows\\dev_accel\\another-journal\\learning-journal\\journal.py"
 
 
 # DB_SCHEMA = """
