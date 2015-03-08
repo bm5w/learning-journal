@@ -69,7 +69,7 @@
         twit = $(".twitter-share-button").clone();
         twttr.widgets.load();
 
-        $("article div.text p").replaceWith(json.text);
+        $(".text").replaceWith(json.text);
 
         $("#edit").hide();
         $("article").show();
