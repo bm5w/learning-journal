@@ -56,3 +56,6 @@ target/
 
 #OS X file pref
 .DS_Store
+
+#sublime files
+*.sublime*
