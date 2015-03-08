@@ -32,7 +32,7 @@ SELECT id, title, text, created FROM entries ORDER BY created DESC
 """
 
 # TEST_DSN = 'postgresql://mark:@localhost:5432/learning-journal'
-TEST_DSN = 'postgresql://postgres:@localhost:5432/travis_ci_test;'
+TEST_DSN = 'postgresql://postgres:@localhost:5432/travis_ci_test'
 
 INPUT_BTN = '<input type="submit" value="Share" name="Share" />'
 
